@@ -192,25 +192,13 @@ food_stamps = []
 #4. Don’t forget to hide the food turtle!
 for this_food_pos in food_pos :
     ####WRITE YOUR CODE HERE!!
+    #snake
+    x_pos= this_food_pos[0]
+    y_pos= this_food_pos[1]
+    food.goto(x_pos,y_pos)
+    food.stamp()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    food_stamps.append(this_food_pos)
+    
 
 
