@@ -106,12 +106,31 @@ turtle.listen()
 
 #3. Do the same for the other arrow keys
 ####WRITE YOUR CODE HERE!!
+def make_food():
+    global food_stamps, food_pos
+    #The screen positions go from -SIZE/2 to +SIZE/2
+    #But we need to make food pieces only appear on game squares
+    #So we cut up the game board into multiples of SQUARE_SIZE.
+    min_x=-int(SIZE_X/2/SQUARE_SIZE)+1
+    max_x=int(SIZE_X/2/SQUARE_SIZE)-1
+    min_y=-int(SIZE_Y/2/SQUARE_SIZE)-1
+    max_y=int(SIZE_Y/2/SQUARE_SIZE)+1
+    #Generating random x and y
+    food_x = random.randint(min_x,max_x)*SQUARE_SIZE
+    food_y = random.randint(min_y,max_y)*SQUARE_SIZE
+    food.goto(food_x,food_y)
+    food_pos.append(food.pos())
+    food_stamps.append(food.stamp())
+    
+    
+    
 
 def move_snake():
+    global food_stamps, food_pos
     my_pos = snake.pos()
     x_pos = my_pos[0]
     y_pos = my_pos[1]
-    turtle.ontimer(move_snake,TIME_STEP) #<--- new line here
+   
 
 
     
@@ -133,6 +152,8 @@ def move_snake():
     new_pos = snake.pos()
     new_x_pos = new_pos[0]
     new_y_pos = new_pos[1]
+    if len ( food_stamps) <=6 :
+        make_food()
 
     # The next three lines check if the snake is hitting the 
     # right edge.
@@ -149,27 +170,38 @@ def move_snake():
         print("You hit the down edge! Game over!")
         quit()
 
-     # You should write code to check for the left, top, and bottom edges.
-    #####WRITE YOUR CODE HERE
-
-    #4. Write the conditions for UP and DOWN on your own
-    ##### YOUR CODE HERE
 
 
-    #Stamp new element and append new stamp in list
-    #Remember: The snake position changed - update my_pos()
+
+    if snake.pos() in pos_list:
+        quit()
 
     my_pos=snake.pos() 
     pos_list.append(my_pos)
     new_stamp = snake.stamp()
     stamp_list.append(new_stamp)
     ######## SPECIAL PLACE - Remember it for Part 5
+
+
+    
+    #If snake is on top of food item
+    if snake.pos() in food_pos:
+        food_ind=food_pos.index(snake.pos()) #What does this do?
+        food.clearstamp(food_stamps[food_ind]) #Remove eaten food                                                    #stamp
+        food_pos.pop(food_ind) #Remove eaten food position
+        food_stamps.pop(food_ind) #Remove eaten food stamp
+        print("You have eaten the food")
+    else:
+
     #pop zeroth element in pos_list to get rid of last the last 
     #piece of the tail
-    old_stamp = stamp_list.pop(0)
-    snake.clearstamp(old_stamp)
+        old_stamp = stamp_list.pop(0)
+        snake.clearstamp(old_stamp)
+        pos_list.pop(0)
+    turtle.ontimer(move_snake,TIME_STEP) #<--- new line here
 
-move_snake()
+
+
 
 
 turtle.register_shape("trash.gif") #Add trash picture
@@ -182,7 +214,6 @@ food.shape("trash.gif")
 
 #Locations of food
 food_pos = [(100,100), (-100,100), (-100,-100), (100,-100)]
-food_stamps = []
 
 # Write code that:
 #1. moves the food turtle to each food position
@@ -196,9 +227,10 @@ for this_food_pos in food_pos :
     x_pos= this_food_pos[0]
     y_pos= this_food_pos[1]
     food.goto(x_pos,y_pos)
-    food.stamp()
 
-    food_stamps.append(this_food_pos)
+    food_stamps_id=food.stamp()
+    food_stamps.append(food_stamps_id)
     
+move_snake()
 
-
+turtle.mainloop()
